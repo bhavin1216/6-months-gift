@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Six Months of Love</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #fff0f5;
+            color: #4a4a4a;
+            overflow-x: hidden;
+        }
+        
+        .heart {
+            position: fixed;
+            font-size: 20px;
+            opacity: 0;
+            z-index: -1;
+        }
+
+        #container {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #ffcce6, #ffc0cb);
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            padding: 2rem;
+            border-radius: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            color: #ff1493;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            color: #ff69b4;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: linear-gradient(to right, #ff69b4, #ff1493);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            text-decoration: none;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(255, 105, 180, 0.6);
+        }
+
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .section {
+            padding: 100px 10%;
+            position: relative;
+            opacity: 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: #ff1493;
+            margin-bottom: 3rem;
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            background-color: #ffb6c1;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 182, 193, 0.7);
+        }
+
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            opacity: 0;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background-color: #fff;
+            border: 4px solid #ff69b4;
+            border-radius: 50%;
+            top: 15px;
+            z-index: 1;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.7);
+        }
+
+        .left {
+            left: 0;
+            text-align: right;
+        }
+
+        .right {
+            left: 50%;
+            text-align: left;
+        }
+
+        .left::after {
+            right: -17px;
+        }
+
+        .right::after {
+            left: -17px;
+        }
+
+        .timeline-content {
+            padding: 20px 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.4);
+        }
+
+        .timeline-date {
+            color: #ff69b4;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.4);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .img-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+            padding: 15px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .img-caption {
+            transform: translateY(0);
+        }
+
+        .memories-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .memory-card {
+            width: 300px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(255, 105, 180, 0.2);
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .memory-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(255, 105, 180, 0.4);
+        }
+
+        .memory-content {
+            padding: 20px;
+        }
+
+        .memory-title {
+            font-size: 1.5rem;
+            color: #ff1493;
+            margin-bottom: 10px;
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .coming-up {
+            text-align: center;
+            margin-top: 60px;
+        }
+
+        .wishes-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .wish-bubble {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .footer {
+            background: linear-gradient(to right, #ff69b4, #ff1493);
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: 100px;
+        }
+
+        .heart-icon {
+            color: white;
+            font-size: 2rem;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .name-highlight {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #ff1493, #9400D3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 5px rgba(255,255,255,0.3);
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+
+        .countdown-item {
+            margin: 0 10px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .countdown-num {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ff69b4, #ff1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .countdown-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .floating-bubble {
+            position: absolute;
+            background-color: rgba(255, 182, 193, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Media queries */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {  
+                font-size: 1.8rem;
+            }
+            
+            .timeline::after {
+                left: 31px;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .left, .right {
+                left: 0;
+                text-align: left;
+            }
+            
+            .left::after, .right::after {
+                left: 15px;
+            }
+            
+            .section {
+                padding: 60px 5%;
+            }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .float-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Special effects */
+        .polaroid {
+            background: white;
+            padding: 15px 15px 40px 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: rotate(-3deg);
+            transition: all 0.3s ease;
+        }
+
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.05);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Confetti effect */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff69b4;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="hero">
+            <div class="floating-hearts"></div>
+            <div class="hero-content">
+                <h1>Six Beautiful Months with Armitha</h1>
+                <h2>Our Journey of Love</h2>
+                <div class="countdown">
+                    <div class="countdown-item">
+                        <div class="countdown-num" id="countdown-months">6</div>
+                        <div class="countdown-label">Months</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-num" id="countdown-days">0</div>
+                        <div class="countdown-label">Days</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-num" id="countdown-hours">0</div>
+                        <div class="countdown-label">Hours</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-num" id="countdown-minutes">0</div>
+                        <div class="countdown-label">Minutes</div>
+                    </div>
+                </div>
+                <p>Six months of laughter, love, and unforgettable moments with <span class="name-highlight">Armitha</span>.</p>
+                <p>Every day with you is a gift I cherish deeply.</p>
+                <a href="#journey" class="btn scroll-btn">Our Journey</a>
+            </div>
+        </div>
+
+        <section id="journey" class="section">
+            <h2 class="section-title">Our Beautiful Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Month 1</div>
+                        <h3>The Beginning</h3>
+                        <p>Where our story began. Those first butterflies and the excitement of something new.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Month 2</div>
+                        <h3>Getting to Know You</h3>
+                        <p>Late night conversations and discovering all the little things that make you special.</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Month 3</div>
+                        <h3>Deeper Connections</h3>
+                        <p>Sharing our dreams, fears, and building trust with every moment spent together.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Month 4</div>
+                        <h3>Adventures Together</h3>
+                        <p>Creating memories that will last a lifetime, one adventure at a time.</p>
+                    </div>
+                </div>
+                <div class="timeline-item left">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Month 5</div>
+                        <h3>Growing Stronger</h3>
+                        <p>Weathering life's challenges together and coming out even stronger.</p>
+                    </div>
+                </div>
+                <div class="timeline-item right">
+                    <div class="timeline-content">
+                        <div class="timeline-date">Month 6</div>
+                        <h3>Six Month Milestone</h3>
+                        <p>Celebrating this beautiful journey and looking forward to many more months of love.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="memories" class="section">
+            <h2 class="section-title">A♥R♥M♥I♥T♥H♥A</h2>
+            <div class="memories-container">
+                <div class="memory-card">
+                    <img src="first date.jpeg" alt="Memory 1" class="gallery-img">
+                    <div class="memory-content">
+                        <h3 class="memory-title">Our First Date</h3>
+                        <p>The nervousness, the excitement, and the moment I knew you were special.</p>
+                    </div>
+                </div>
+                <div class="memory-card">
+                    <img src="first dance.jpeg" alt="Memory 2" class="gallery-img">
+                    <div class="memory-content">
+                        <h3 class="memory-title">That First Dance</h3>
+                        <p>When we first danced and lost track of time completely.</p>
+                    </div>
+                </div>
+                <div class="memory-card">
+                    <img src="inside jokes.jpeg" alt="Memory 3" class="gallery-img">
+                    <div class="memory-content">
+                        <h3 class="memory-title">Our Inside Jokes</h3>
+                        <p>The little moments of laughter that only we understand.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="section">
+            <h2 class="section-title">Our Photo Gallery</h2>
+            <div class="photo-gallery">
+                <div class="gallery-item polaroid">
+                    <img src="first selfie.jpeg" alt="Together" class="gallery-img">
+                    <div class="img-caption">Our first selfie together</div>
+                </div>
+                <div class="gallery-item polaroid">
+                    <img src="park.jpeg" alt="Special day" class="gallery-img">
+                    <div class="img-caption">That special day in the park</div>
+                </div>
+                <div class="gallery-item polaroid">
+                    <img src="traditional day.jpeg" alt="Celebration" class="gallery-img">
+                    <div class="img-caption">Celebrating traditional day</div>
+                </div>
+                <div class="gallery-item polaroid">
+                    <img src="WhatsApp Image 2025-05-19 at 2.39.27 AM.jpeg" alt="Surprise" class="gallery-img">
+                    <div class="img-caption">Our first car drive</div>
+                </div>
+                <div class="gallery-item polaroid">
+                    <img src="adventure cafe.jpeg" alt="Adventure" class="gallery-img">
+                    <div class="img-caption">Our weekend adventure cafe</div>
+                </div>
+                <div class="gallery-item polaroid">
+                    <img src="funny armitha.jpeg" alt="Laughing" class="gallery-img">
+                    <div class="img-caption">Couldn't stop laughing fr</div>
+                </div>
+                <div class="gallery-item polaroid">
+                    <img src="diplomatic day.jpeg" alt="Laughing" class="gallery-img">
+                    <div class="img-caption">Diplomatic day</div>
+                </div>
+                <div class="gallery-item polaroid">
+                    <img src="cute.jpeg" alt="Laughing" class="gallery-img">
+                    <div class="img-caption">Stunning all day</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="wishes" class="section">
+            <h2 class="section-title">Wishes For Our Future</h2>
+            <div class="wishes-container">
+                <div class="wish-bubble">
+                    <p>I wish for countless more adventures with you, exploring new places and creating beautiful memories together.</p>
+                </div>
+                <div class="wish-bubble">
+                    <p>I wish for growth together, supporting each other's dreams and becoming the best versions of ourselves.</p>
+                </div>
+                <div class="wish-bubble">
+                    <p>I wish for a love that continues to deepen and strengthen with each passing day, month, and year.</p>
+                </div>
+                <div class="coming-up">
+                    <h3>Looking Forward To...</h3>
+                    <p>Our next milestone, our next adventure, and every beautiful moment in between.</p>
+                    <a href="#" class="btn" id="surprise-btn">A Special Surprise</a>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="heart-icon">❤️</div>
+            <p>Six months down, forever to go with my one and only.</p>
+            <p>I love you more with each passing day.</p>
+            <p>       - Your silly boyfriend Bhavin</p>
+        </footer>
+    </div>
+
+    <script>
+        // Floating hearts background
+        function createHearts() {
+            const container = document.querySelector('.floating-hearts');
+            const heartColors = ['#ff69b4', '#ff1493', '#ffb6c1', '#ffc0cb', '#db7093'];
+            
+            for (let i = 0; i < 40; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤';
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heart.style.fontSize = Math.random() * 15 + 10 + 'px';
+                heart.style.color = heartColors[Math.floor(Math.random() * heartColors.length)];
+                heart.style.opacity = Math.random() * 0.5 + 0.3;
+                heart.style.animationDuration = Math.random() * 10 + 5 + 's';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(heart);
+            }
+        }
+
+        // Create floating background bubbles
+        function createBubbles() {
+            const container = document.querySelector('#container');
+            for (let i = 0; i < 15; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'floating-bubble';
+                
+                const size = Math.random() * 100 + 50;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                
+                bubble.style.left = Math.random() * 100 + 'vw';
+                bubble.style.top = Math.random() * 200 + 'vh';
+                
+                bubble.style.opacity = Math.random() * 0.3 + 0.1;
+                
+                container.appendChild(bubble);
+                
+                // Animate the bubble
+                anime({
+                    targets: bubble,
+                    translateY: [
+                        { value: -300, duration: Math.random() * 10000 + 5000, easing: 'easeInOutQuad' },
+                    ],
+                    translateX: [
+                        { value: Math.random() * 100 - 50, duration: Math.random() * 8000 + 4000, easing: 'easeInOutSine' },
+                    ],
+                    scale: [
+                        { value: Math.random() * 0.5 + 0.5, duration: Math.random() * 3000 + 2000, easing: 'easeInOutQuad' },
+                        { value: Math.random() * 0.5 + 0.5, duration: Math.random() * 3000 + 2000, easing: 'easeInOutQuad' }
+                    ],
+                    loop: true,
+                    direction: 'alternate'
+                });
+            }
+        }
+
+        // Scroll animation
+        function initScrollAnimation() {
+            document.querySelectorAll('.scroll-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+                    window.scrollTo({
+                        top: targetSection.offsetTop,
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        }
+
+        // Animate sections when scrolled into view
+        function animateSections() {
+            const sections = document.querySelectorAll('.section');
+            const timelineItems = document.querySelectorAll('.timeline-item');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            const memoryCards = document.querySelectorAll('.memory-card');
+            const wishBubbles = document.querySelectorAll('.wish-bubble');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            sections.forEach(section => {
+                section.style.transition = 'opacity 1s ease, transform 1s ease';
+                observer.observe(section);
+            });
+            
+            timelineItems.forEach((item, index) => {
+                item.style.transition = 'opacity 0.8s ease ' + (index * 0.2) + 's, transform 0.8s ease ' + (index * 0.2) + 's';
+                item.style.transform = item.classList.contains('left') ? 'translateX(-50px)' : 'translateX(50px)';
+                observer.observe(item);
+            });
+            
+            galleryItems.forEach((item, index) => {
+                item.style.transition = 'opacity 0.8s ease ' + (index * 0.1) + 's, transform 0.8s ease ' + (index * 0.1) + 's';
+                observer.observe(item);
+            });
+            
+            memoryCards.forEach((card, index) => {
+                card.style.transition = 'opacity 0.8s ease ' + (index * 0.2) + 's, transform 0.8s ease ' + (index * 0.2) + 's';
+                observer.observe(card);
+            });
+            
+            wishBubbles.forEach((bubble, index) => {
+                bubble.style.transition = 'opacity 0.8s ease ' + (index * 0.2) + 's, transform 0.8s ease ' + (index * 0.2) + 's';
+                observer.observe(bubble);
+            });
+        }
+
+        // Hero animation
+        function animateHero() {
+            anime({
+                targets: '.hero-content',
+                opacity: [0, 1],
+                translateY: [50, 0],
+                easing: 'easeOutQuad',
+                duration: 1200,
+                delay: 300
+            });
+            
+            // Animate hearts
+            anime({
+                targets: '.heart',
+                opacity: [0, 0.7],
+                translateY: function() { return [-100, -300 - (Math.random() * 500)]; },
+                translateX: function() { return Math.random() * 50 - 25; },
+                rotate: function() { return Math.random() * 90 - 45; },
+                duration: function() { return 3000 + (Math.random() * 5000); },
+                delay: function() { return Math.random() * 2000; },
+                easing: 'easeOutQuad',
+                loop: true
+            });
+        }
+
+        // Confetti effect
+        function createConfetti() {
+            const confettiColors = ['#ff69b4', '#ff1493', '#ffb6c1', '#ffc0cb', '#db7093', '#fff0f5'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -20 + 'px';
+                confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                confetti.style.width = Math.random() * 10 + 5 + 'px';
+                confetti.style.height = Math.random() * 10 + 5 + 'px';
+                confetti.style.opacity = Math.random() * 0.7 + 0.3;
+                confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(confetti);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        // Surprise button
+        function setupSurpriseButton() {
+            document.getElementById('surprise-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                createConfetti();
+                
+                // Create a love note modal
+                const modal = document.createElement('div');
+                modal.style.position = 'fixed';
+                modal.style.top = '50%';
+                modal.style.left = '50%';
+                modal.style.transform = 'translate(-50%, -50%)';
+                modal.style.backgroundColor = 'white';
+                modal.style.padding = '30px';
+                modal.style.borderRadius = '20px';
+                modal.style.boxShadow = '0 10px 30px rgba(255, 105, 180, 0.4)';
+                modal.style.zIndex = '1000';
+                modal.style.maxWidth = '80%';
+                modal.style.textAlign = 'center';
+                
+                modal.innerHTML = `
+                    <h3 style="font-family: 'Dancing Script', cursive; font-size: 2rem; color: #ff1493; margin-bottom: 20px;">A Special Message for Armitha</h3>
+                    <p style="margin-bottom: 20px;">These six months with you, <strong>Armitha</strong>, have been the most beautiful chapter of my life. Thank you for every smile, every laugh, and every moment we've shared. I fall more in love with you each day.</p>
+                    <div style="font-size: 1.5rem; margin: 15px 0;">A + B = F❤️REVER</div>
+                    <button id="close-modal" style="background: linear-gradient(to right, #ff69b4, #ff1493); color: white; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer;">Close ❤️</button>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Create overlay
+                const overlay = document.createElement('div');
+                overlay.style.position = 'fixed';
+                overlay.style.top = '0';
+                overlay.style.left = '0';
+                overlay.style.width = '100%';
+                overlay.style.height = '100%';
+                overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                overlay.style.zIndex = '999';
+                
+                document.body.appendChild(overlay);
+                
+                // Close modal functionality
+                document.getElementById('close-modal').addEventListener('click', function() {
+                    modal.remove();
+                    overlay.remove();
+                });
+                
+                overlay.addEventListener('click', function() {
+                    modal.remove();
+                    overlay.remove();
+                });
+            });
+        }
+
+        // Countdown timer
+        function updateCountdown() {
+            // This would normally calculate from your anniversary date
+            // For demo purposes, we're showing a static 6 months
+            document.getElementById('countdown-months').textContent = "6";
+            document.getElementById('countdown-days').textContent = "0";
+            document.getElementById('countdown-hours').textContent = "0";
+            document.getElementById('countdown-minutes').textContent = "0";
+        }
+
+        // Function to create floating photos
+        function createFloatingImages() {
+            const memoryCards = document.querySelectorAll('.memory-card');
+            
+            memoryCards.forEach(card => {
+                anime({
+                    targets: card,
+                    translateY: function() { return [0, -15]; },
+                    direction: 'alternate',
+                    loop: true,
+                    easing: 'easeInOutSine',
+                    duration: 3000,
+                    delay: anime.random(0, 1000)
+                });
+            });
+        }
+
+        // Create floating name letters
+        function createFloatingName() {
+            const name = "ARMITHA";
+            const container = document.querySelector('.hero');
+            
+            for (let i = 0; i < name.length; i++) {
+                const letter = document.createElement('div');
+                letter.textContent = name[i];
+                letter.style.position = 'absolute';
+                letter.style.fontFamily = "'Dancing Script', cursive";
+                letter.style.color = '#ff1493';
+                letter.style.fontSize = (Math.random() * 20 + 30) + 'px';
+                letter.style.opacity = 0.5;
+                letter.style.zIndex = 1;
+                letter.style.textShadow = '0 0 10px rgba(255, 255, 255, 0.7)';
+                
+                // Random position
+                letter.style.left = (Math.random() * 80 + 10) + '%';
+                letter.style.top = (Math.random() * 80 + 10) + '%';
+                
+                container.appendChild(letter);
+                
+                // Animate the letter
+                anime({
+                    targets: letter,
+                    translateY: function() { return [0, -30]; },
+                    translateX: function() { return [0, Math.random() * 40 - 20]; },
+                    opacity: [0.5, 0.8, 0.5],
+                    scale: [1, 1.2, 1],
+                    direction: 'alternate',
+                    loop: true,
+                    easing: 'easeInOutQuad',
+                    duration: 3000 + (i * 500),
+                    delay: i * 200
+                });
+            }
+        }
+
+        // Create acrostic poem from name
+        function createAcrosticPoem() {
+            const name = ["A", "R", "M", "I", "T", "H", "A"];
+            const poem = [
+                "Always by my side through thick and thin",
+                "Radiating beauty inside and out",
+                "Magical moments we create together",
+                "Inspiring me to be my best self",
+                "Treasuring every second we share",
+                "Holding my heart with your gentle touch",
+                "Amazing in every single way"
+            ];
+            
+            const poemContainer = document.createElement('div');
+            poemContainer.style.margin = '40px auto';
+            poemContainer.style.maxWidth = '600px';
+            poemContainer.style.padding = '30px';
+            poemContainer.style.background = 'white';
+            poemContainer.style.borderRadius = '15px';
+            poemContainer.style.boxShadow = '0 10px 30px rgba(255, 105, 180, 0.3)';
+            
+            const title = document.createElement('h3');
+            title.textContent = 'For My Armitha';
+            title.style.fontFamily = "'Dancing Script', cursive";
+            title.style.fontSize = '2rem';
+            title.style.color = '#ff1493';
+            title.style.marginBottom = '20px';
+            title.style.textAlign = 'center';
+            
+            poemContainer.appendChild(title);
+            
+            for (let i = 0; i < name.length; i++) {
+                const line = document.createElement('p');
+                line.innerHTML = '<span style="font-weight: bold; color: #ff1493; font-size: 1.5rem;">' + name[i] + '</span> - ' + poem[i];
+                line.style.marginBottom = '15px';
+                line.style.opacity = 0;
+                poemContainer.appendChild(line);
+                
+                // Animate each line
+                setTimeout(() => {
+                    line.style.transition = 'opacity 0.8s ease';
+                    line.style.opacity = 1;
+                }, 300 * i);
+            }
+            
+            // Insert after wishes section
+            const wishesSection = document.getElementById('wishes');
+            wishesSection.appendChild(poemContainer);
+        }
+
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createHearts();
+            createBubbles();
+            initScrollAnimation();
+            animateSections();
+            animateHero();
+            updateCountdown();
+            createFloatingImages();
+            setupSurpriseButton();
+            createFloatingName();
+            createAcrosticPoem();
+            
+            // Add float animation to polaroid images
+            document.querySelectorAll('.polaroid').forEach((polaroid, index) => {
+                polaroid.style.animationDelay = (index * 0.5) + 's';
+                polaroid.classList.add('float-animation');
+            });
+        });
+    </script>
+</body>
+</html>
